@@ -1,0 +1,8 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: mysecret
+data:
+  user: amsy810
+  password: my-p@ssw0rd
+

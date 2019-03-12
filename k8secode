@@ -1,0 +1,52 @@
+#! /usr/bin/env python
+# -*- coding:utf-8 -*-
+
+import base64
+import yaml
+import sys
+
+args = sys.argv
+
+def usage():
+    print("Usege: %s [encrypt|decrypt] FILENAME [-f]" % args[0])
+    sys.exit(1)
+
+def encrypt_yaml(data):
+    for k, v in data["data"].items():
+        data["data"][k] = base64.b64encode(v.encode('utf-8')).decode("ascii")
+
+def decrypt_yaml(data):
+    for k, v in data["data"].items():
+        data["data"][k] = base64.b64decode(v.encode('utf-8')).decode("ascii")
+
+def main():
+    force = ("-f" in args)
+    nargs = [i for i in args if not i == "-f"]
+
+    if len(args) < 3:
+        usage()
+
+    op = nargs[1]
+    filename = nargs[2]
+
+    if op != "encrypt" and op != "decrypt":
+        usage()
+
+    with open(filename, "r") as f:
+        data = yaml.load(f)
+
+        if op == "encrypt":
+            encrypt_yaml(data)
+        elif op == "decrypt":
+            decrypt_yaml(data)
+
+        output = yaml.dump(data, default_flow_style=False)
+
+    if force:
+        with open(filename, "w") as f:
+            f.write(output)
+    else:
+        print(output)
+
+main()
+
